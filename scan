@@ -9,7 +9,7 @@ APPEND=0
 RESOLUTION=300
 MODE=Lineart
 SCRIPT="$DIR/scan_perpage"
-DUPLEX=0
+SOURCE=
 UNPAPER=0
 SEARCHABLE=0
 LANGUAGE=eng
@@ -40,7 +40,7 @@ while [ $# -gt 0 ]; do
 
   -v|--verbose) VERBOSE=1 ;;
 
-  -d|--duplex) DUPLEX=1 ;;
+  --source) shift; SOURCE=$1 ;;
 
   -m|--mode) shift; MODE=$1 ;;
 
@@ -92,8 +92,8 @@ if [ $HELP -eq 1 ]; then
   echo "OPTIONS"
   echo " -v, --verbose"
   echo "   Verbose output (this will slow down the scan due to the need to prevent interleaved output)"
-  echo " -d, --duplex"
-  echo "   Duplex scanning"
+  echo " --source"
+  echo "   Source. Depends on driver (HP: flatbed, adf, duplex)"
   echo " -m, --mode"
   echo "   Mode e.g. Lineart (default), Halftone, Gray, Color, etc."
   echo " -r, --resolution"
@@ -155,9 +155,8 @@ if [ $USEARRAY = 1 -a ! $APPEND = 1 ]; then
   done
 fi
 
-SOURCE=""
-if [ $DUPLEX -eq 1 ]; then
-  SOURCE="--source \"ADF Duplex\""
+if [ ! -z "$SOURCE" ]; then
+  SOURCE="--source $SOURCE"
 fi
 
 if [ "$MAXPAGE" != "" ]; then
@@ -224,7 +223,7 @@ fi;
 
 echo >&2 "Scanning..."
 #eval strace -f -o /tmp/scan-trace.txt scanadf -d $DEVICE $MAXPAGE $PGHEIGHT $PGWIDTH -S $SCRIPT --script-wait --resolution $RESOLUTION --mode $MODE $DESKEW $CROP $SOURCE -o scan-%04d
-eval scanadf -d "$DEVICE" $MAXPAGE $PGHEIGHT $PGWIDTH -S $SCRIPT --script-wait --resolution $RESOLUTION --mode $MODE $DESKEW $CROP $DRIVER_OPTION $SOURCE -o $TMP_DIR/scan-%04d
+eval scanadf -d "$DEVICE" $SOURCE $MAXPAGE -S $SCRIPT --script-wait --resolution $RESOLUTION --mode $MODE $DESKEW $CROP $DRIVER_OPTION -o $TMP_DIR/scan-%04d
 
 shopt -s extglob nullglob
 pdffiles=($TMP_DIR/scan-[0-9]*.pdf)
