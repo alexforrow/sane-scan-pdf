@@ -1,5 +1,7 @@
 # SANE Command-Line Scan to PDF
 
+This fork has been updated to work with HP printers, with a Docker image.
+
 Sane command-line scanning bash shell script on Linux with OCR and deskew support. The script automates
 common scan-to-pdf operations for scanners with an automatic document feeder, such as the awesome Fujitsu
 ScanSnap S1500, with output to PDF files.
